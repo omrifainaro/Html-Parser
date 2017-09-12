@@ -1,25 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-typedef enum { false, true } bool;
-
-typedef struct _TAG{
-    bool isStartTag;
-    char* startTag;
-    char* endTag;
-} TAG, *PTAG;
-
-typedef struct _NODE{
-    TAG tag;
-    struct _NODE* next;
-    struct _NODE* prev;
-} NODE, *PNODE;
-
-typedef struct _LINKEDLIST{
-    PNODE first;
-    PNODE last;
-} LINKEDLIST, *PLINKEDLIST;
+#include "parser.h"
 
 PNODE newNode(bool isStartTag, char* startTag, char* endTag){
     PNODE node = (PNODE) malloc(sizeof(NODE));
@@ -38,13 +17,21 @@ PLINKEDLIST newList(){
     return list;
 }
 
+void printTag(TAG tag){
+	int size = (tag.endTag - tag.startTag);
+	int i;
+	for (i = 0; i < size+1; i++) {
+		printf("%c", tag.startTag[i]);
+	}
+}
+
 void printList(PLINKEDLIST list){
-    PNODE cur = list->first;
-    while(cur != NULL){
-        printf("%s --> ", cur->tag.startTag);
-        cur = cur->next;
-    }
-    printf("NULL");
+	PNODE cur;
+	for (cur = list->first; cur != NULL; cur = cur->next) {
+		printTag(cur->tag);
+		printf(" --> ");
+	}
+    printf("NULL\n");
 }
 
 void appendList(PLINKEDLIST list, PNODE node){
@@ -61,27 +48,50 @@ void appendList(PLINKEDLIST list, PNODE node){
 
 PLINKEDLIST tagparse(char* html){
     PLINKEDLIST list = newList();
-    char* token = strtok(html, "<");
-    
-    //TAG temps
+	PNODE node;
+	int i = 0;
+
+	//TAG temps
     bool isStartTag;
     char *startTag, *endTag;
     
-    while(token != NULL){
-        isStartTag = !(*(token+1) == '/');
-        startTag = token;
-        token = strtok(NULL, ">");
-        endTag = token;
-        appendList(list, newNode(isStartTag, startTag, endTag));
-        token = strtok(NULL, "<");
-    }
+	for (i = 0; i < strlen(html); i++) {
+		if (html[i] == '<') {
+			startTag = &html[i];
+			if (html[i + 1] == '/') {
+				isStartTag = 1;
+			}
+			while (1) {
+				if (html[i] != '>') {
+					i++;
+					continue;
+				}
+				endTag = &html[i];
+				break;
+			}
+			node = newNode(isStartTag, startTag, endTag);
+			appendList(list, node);
+		}
+	}
     
     return list;
 }
 
-int main(int argc, char* argv[]){
-    char htmlPage[92] = "<html><head><title>tasikef</title></head><body><a href='tasik.com'>poopik</a></body></html>\0";
-    PLINKEDLIST list = tagparse(htmlPage);
-    printList(list);
-    return 0;
+bool hasAttributes(TAG tag) {
+	char beforeClose = *(tag.endTag - 1);
+	if (beforeClose == '"' || beforeClose == ' ') {
+		return true;
+	}
+	return false;
+}
+
+char* getName(TAG tag) {
+	char* name;
+	int i = 0;
+	char* start = tag.startTag+1;
+	int size;
+
+	while ((start[i] >= 'a' && start[i] <= 'z') || (start[i] >= 'A' && start[i] <= 'Z')) { i++; }
+	size = (int)(&start[i] - start);
+	return makeStrFrom(start, size);
 }

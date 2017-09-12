@@ -19,8 +19,9 @@ char* loadFileToRAM(char* filename, PULLONG size) {
 	return buffer;
 }
 
-
-
-
-
-
+char* makeStrFrom(char* src, int size) {
+	char* toRet = (char*) malloc(size + 1);
+	memset(toRet, 0, size+1);
+	strncpy(toRet, src, size);
+	return toRet;
+}
