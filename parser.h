@@ -80,3 +80,5 @@ Return:
 	returns a new alloacted name tag for that tag containing only the name
 */
 char* getName(TAG tag);
+
+char* getAttribute(TAG tag, char* attribute);

@@ -14,5 +14,6 @@ int main(int argc, char* argv[]){
 	fileData = loadFileToRAM(argv[1], &fileSize);
 	PLINKEDLIST list = tagparse(fileData);
 	printList(list);
+	printf("%s\n", getAttribute(list->first->next->tag, "id"));
 	return 1;
 }

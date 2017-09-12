@@ -95,3 +95,17 @@ char* getName(TAG tag) {
 	size = (int)(&start[i] - start);
 	return makeStrFrom(start, size);
 }
+
+char* getAttribute(TAG tag, char* attribute) {
+	char* attributePtr;
+	attributePtr = strstr(tag.startTag, attribute);
+	int size;
+	int i = 0;
+	if (attributePtr == NULL) {
+		return NULL;
+	}
+	attributePtr += strlen(attribute) + 2; // 2 -> ="
+	while (attributePtr[i] != '"') { i++; }
+	size = (int)(&attributePtr[i] - attributePtr);
+	return makeStrFrom(attributePtr, size);
+}
