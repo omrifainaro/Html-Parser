@@ -7,7 +7,7 @@ int main(int argc, char* argv[]){
 	ULLONG fileSize;
 
 	if (argc < 2) {
-		printf("Usage: %s <htmlfile>");
+		printf("Usage: %s <htmlfile>\n", argv[0]);
 		return -1;
 	}
 

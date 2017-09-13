@@ -1,22 +1,5 @@
 #include "parser.h"
 
-PNODE newNode(bool isStartTag, char* startTag, char* endTag){
-    PNODE node = (PNODE) malloc(sizeof(NODE));
-    node->tag.startTag = startTag;
-    node->tag.isStartTag = isStartTag;
-    node->tag.endTag = endTag;
-    node->next = NULL;
-    node->prev = NULL;
-    return node;
-}
-
-PLINKEDLIST newList(){
-    PLINKEDLIST list = (PLINKEDLIST) malloc(sizeof(LINKEDLIST));
-    list->first = NULL;
-    list->last = NULL;
-    return list;
-}
-
 void printTag(TAG tag){
 	int size = (tag.endTag - tag.startTag);
 	int i;
@@ -25,34 +8,13 @@ void printTag(TAG tag){
 	}
 }
 
-void printList(PLINKEDLIST list){
-	PNODE cur;
-	for (cur = list->first; cur != NULL; cur = cur->next) {
-		printTag(cur->tag);
-		printf(" --> ");
-	}
-    printf("NULL\n");
-}
-
-void appendList(PLINKEDLIST list, PNODE node){
-    if(list->first == NULL){
-        list->first = node;
-        list->last = node;
-    }
-    else{
-        list->last->next = node;
-        node->prev = list->last;
-        list->last = list->last->next;
-    }
-}
-
 PLINKEDLIST tagparse(char* html){
     PLINKEDLIST list = newList();
 	PNODE node;
 	int i = 0;
 
 	//TAG temps
-    bool isStartTag;
+    int isStartTag;
     char *startTag, *endTag;
     
 	for (i = 0; i < strlen(html); i++) {
@@ -77,12 +39,12 @@ PLINKEDLIST tagparse(char* html){
     return list;
 }
 
-bool hasAttributes(TAG tag) {
+int hasAttributes(TAG tag) {
 	char beforeClose = *(tag.endTag - 1);
 	if (beforeClose == '"' || beforeClose == ' ') {
-		return true;
+		return 1;
 	}
-	return false;
+	return 0;
 }
 
 char* getName(TAG tag) {
