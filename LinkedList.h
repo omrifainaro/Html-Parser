@@ -65,4 +65,14 @@ void printList(PLINKEDLIST list);
  */
 void appendList(PLINKEDLIST list, PNODE node);
 
+/*
+Remove all of the list
+Params:
+    1) list - list to remove
+*/
+void removeList(PLINKEDLIST list);
+
+
+
+
 #endif

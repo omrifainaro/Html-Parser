@@ -37,3 +37,18 @@ void appendList(PLINKEDLIST list, PNODE node){
         list->last = list->last->next;
     }
 }
+
+void removeList(PLINKEDLIST list){
+    PNODE cur = list->first, toDelete;
+    while(cur != NULL){
+        toDelete = cur;
+        cur = cur->next;
+        free(toDelete);
+    }
+    free(cur);
+    free(list);
+}
+
+
+
+

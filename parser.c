@@ -41,7 +41,7 @@ PLINKEDLIST tagparse(char* html){
 
 int hasAttributes(TAG tag) {
 	char beforeClose = *(tag.endTag - 1);
-	if (beforeClose == '"' || beforeClose == ' ') {
+	if (beforeClose == '"' || beforeClose == ' ' || *(tag.startTag+1) == '/') {
 		return 1;
 	}
 	return 0;
@@ -51,6 +51,9 @@ char* getName(TAG tag) {
 	char* name;
 	int i = 0;
 	char* start = tag.startTag+1;
+    if(*start == '/'){
+        start++;
+    }
 	int size;
 
 	while ((start[i] >= 'a' && start[i] <= 'z') || (start[i] >= 'A' && start[i] <= 'Z')) { i++; }
@@ -63,7 +66,7 @@ char* getAttribute(TAG tag, char* attribute) {
 	attributePtr = strstr(tag.startTag, attribute);
 	int size;
 	int i = 0;
-	if (attributePtr == NULL) {
+    if (attributePtr == NULL || !hasAttributes(tag)) {
 		return NULL;
 	}
 	attributePtr += strlen(attribute) + 2; // 2 -> ="
@@ -71,3 +74,29 @@ char* getAttribute(TAG tag, char* attribute) {
 	size = (int)(&attributePtr[i] - attributePtr);
 	return makeStrFrom(attributePtr, size);
 }
+
+PLINKEDLIST findAll(PLINKEDLIST parsedHtml, char* name){
+    PLINKEDLIST list;
+    PNODE cur;
+    char* nameTemp;
+    
+    list = newList();
+    for(cur = parsedHtml->first; cur != NULL; cur = cur->next){
+        nameTemp = getName(cur->tag);
+        if(!strcmp(nameTemp, name)){
+            appendList(list, newNode(cur->tag.isStartTag, cur->tag.startTag, cur->tag.endTag));
+        }
+        free(nameTemp);
+    }
+    return list;
+}
+
+
+
+
+
+
+
+
+
+
